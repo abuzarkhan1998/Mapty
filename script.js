@@ -64,6 +64,7 @@ class App {
   #map;
   #mapEvent;
   #workout = [];
+  #zoomLevel = 13;
 
   constructor() {
     this._getPosition();
@@ -71,6 +72,8 @@ class App {
     form.addEventListener('submit', this._newWorkout.bind(this));
 
     inputType.addEventListener('change', this._toggleElevationField);
+
+    containerWorkouts.addEventListener('click',this._moveMarker.bind(this));
   }
 
   _getPosition() {
@@ -88,7 +91,7 @@ class App {
     const { latitude, longitude } = position.coords;
     // console.log(latitude,longitude);
     const coords = [latitude, longitude];
-    this.#map = L.map('map').setView(coords, 13);
+    this.#map = L.map('map').setView(coords, this.#zoomLevel);
 
     L.tileLayer('https://{s}.tile.openstreetmap.fr/hot/{z}/{x}/{y}.png', {
       attribution:
@@ -236,6 +239,22 @@ class App {
       inputCadence.value =
       inputElevation.value =
         '';
+  }
+
+  _moveMarker(e){
+    // console.log(this);
+    // console.log(e.target);
+    const workOutEl = e.target.closest('.workout');
+    if(!workOutEl) return;
+    // console.log(workOutEl);
+    const matchedWorkOut = this.#workout.find(work => work.id === workOutEl.dataset.id);
+    // console.log(matchedWorkOut);
+    this.#map.setView(matchedWorkOut.coords,this.#zoomLevel, {
+        animate : true,
+        pan :{
+            duration : 1
+        }
+    });
   }
 }
 
