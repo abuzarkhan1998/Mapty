@@ -74,6 +74,8 @@ class App {
     inputType.addEventListener('change', this._toggleElevationField);
 
     containerWorkouts.addEventListener('click',this._moveMarker.bind(this));
+
+    this._getLocation();
   }
 
   _getPosition() {
@@ -99,6 +101,10 @@ class App {
     }).addTo(this.#map);
 
     this.#map.on('click', this._showForm.bind(this));
+
+    this.#workout.forEach(work => {
+        this._renderWorkoutMap(work);
+    });
   }
 
   _showForm(mapE) {
@@ -162,6 +168,8 @@ class App {
     //clear fields
     this._hideForm();
     //    console.log(mapEvent);
+
+    this._saveLocation();
   }
 
   _renderWorkoutMap(position) {
@@ -255,6 +263,25 @@ class App {
             duration : 1
         }
     });
+  }
+
+  _saveLocation(){
+    localStorage.setItem('workOut', JSON.stringify(this.#workout));
+  }
+
+  _getLocation(){
+    const data = JSON.parse(localStorage.getItem('workOut'));
+    // console.log(data);
+    if(!data) return;
+    this.#workout = data;
+    this.#workout.forEach(work => {
+        this._renderWorkoutList(work);
+    });
+  }
+
+  reset(){
+    localStorage.removeItem('workOut');
+    location.reload();
   }
 }
 
